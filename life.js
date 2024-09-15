@@ -2,7 +2,10 @@ let grid = [];
 let interval;
 let size = 10;
 let isDragging = false;
+let isPlacing = false; // セルを配置中かどうか
+let lastTouchedCell = null; // 最後にタッチしたセル
 
+// グリッドを作成する関数
 const createGrid = (size) => {
     const gridContainer = document.getElementById('grid');
     gridContainer.innerHTML = '';
@@ -14,51 +17,70 @@ const createGrid = (size) => {
             const cell = document.createElement('div');
             cell.classList.add('cell');
 
-            // マウスイベント
-            cell.addEventListener('mousedown', () => {
+            // セルをクリックまたはドラッグして設置する
+            cell.addEventListener('mousedown', (e) => {
+                e.preventDefault();
                 isDragging = true;
+                isPlacing = true; // 配置開始
                 toggleCell(i, j, cell);
-            });
-            cell.addEventListener('mouseover', () => {
-                if (isDragging) {
-                    toggleCell(i, j, cell);
-                }
-            });
-            cell.addEventListener('mouseup', () => {
-                isDragging = false;
+                lastTouchedCell = cell; // 最後にタッチしたセルを記録
             });
 
-            // タッチイベント
-            cell.addEventListener('touchstart', (event) => {
-                event.preventDefault(); // スクロールを防ぐ
-                isDragging = true;
-                toggleCell(i, j, cell);
-            });
-            cell.addEventListener('touchmove', (event) => {
-                event.preventDefault(); // スクロールを防ぐ
-                if (isDragging) {
-                    toggleCell(i, j, cell);
+            cell.addEventListener('mouseover', () => {
+                if (isDragging && isPlacing) {
+                    if (lastTouchedCell !== cell) { // 異なるセルの場合のみ
+                        toggleCell(i, j, cell);
+                        lastTouchedCell = cell; // 更新
+                    }
                 }
             });
+
+            cell.addEventListener('mouseup', () => {
+                isDragging = false;
+                isPlacing = false; // 配置終了
+                lastTouchedCell = null; // リセット
+            });
+
+            // タッチイベントを追加
+            cell.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // スクロール防止
+                isDragging = true;
+                isPlacing = true; // 配置開始
+                toggleCell(i, j, cell);
+                lastTouchedCell = cell; // 最後にタッチしたセルを記録
+            });
+
+            cell.addEventListener('touchmove', (e) => {
+                e.preventDefault(); // スクロール防止
+                if (isDragging && isPlacing) {
+                    const touch = e.touches[0];
+                    const newCell = document.elementFromPoint(touch.clientX, touch.clientY);
+                    if (newCell && newCell.classList.contains('cell') && lastTouchedCell !== newCell) {
+                        const [i, j] = getCellIndex(newCell);
+                        toggleCell(i, j, newCell);
+                        lastTouchedCell = newCell; // 更新
+                    }
+                }
+            });
+
             cell.addEventListener('touchend', () => {
                 isDragging = false;
+                isPlacing = false; // 配置終了
+                lastTouchedCell = null; // リセット
             });
 
             gridContainer.appendChild(cell);
         }
     }
-
-    // タッチ操作のための全体イベントリスナー
-    gridContainer.addEventListener('touchend', () => {
-        isDragging = false;
-    });
 };
 
+// セルのトグル機能
 const toggleCell = (i, j, cell) => {
-    grid[i][j] = !grid[i][j];
-    cell.classList.toggle('alive');
+    grid[i][j] = !grid[i][j]; // 生死をトグル
+    cell.classList.toggle('alive', grid[i][j]);
 };
 
+// グリッドを更新する関数
 const updateGrid = () => {
     const newGrid = grid.map(arr => [...arr]);
     
@@ -77,6 +99,7 @@ const updateGrid = () => {
     renderGrid();
 };
 
+// 生存している隣接セルの数をカウント
 const countAliveNeighbors = (x, y) => {
     const directions = [
         [-1, -1], [-1, 0], [-1, 1],
@@ -96,6 +119,7 @@ const countAliveNeighbors = (x, y) => {
     return count;
 };
 
+// グリッドを描画する関数
 const renderGrid = () => {
     const cells = document.querySelectorAll('.cell');
     cells.forEach((cell, index) => {
@@ -105,6 +129,7 @@ const renderGrid = () => {
     });
 };
 
+// ボタンにイベントリスナーを追加
 document.getElementById('createGrid').addEventListener('click', () => {
     size = parseInt(document.getElementById('size').value);
     createGrid(size);
@@ -128,3 +153,41 @@ document.getElementById('reset').addEventListener('click', () => {
 
 // 初期グリッド作成
 createGrid(size);
+
+// ドキュメント全体でドラッグを管理
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+    isPlacing = false; // 配置終了
+    lastTouchedCell = null; // リセット
+});
+document.addEventListener('mouseleave', () => {
+    isDragging = false;
+    isPlacing = false; // 配置終了
+    lastTouchedCell = null; // リセット
+});
+
+// グリッド全体でドラッグを管理
+const gridContainer = document.getElementById('grid');
+gridContainer.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    isDragging = true;
+    isPlacing = true; // 配置開始
+});
+gridContainer.addEventListener('mouseup', () => {
+    isDragging = false;
+    isPlacing = false; // 配置終了
+    lastTouchedCell = null; // リセット
+});
+gridContainer.addEventListener('mouseleave', () => {
+    isDragging = false;
+    isPlacing = false; // 配置終了
+    lastTouchedCell = null; // リセット
+});
+
+// セルのインデックスを取得する関数
+const getCellIndex = (cell) => {
+    const index = Array.from(gridContainer.children).indexOf(cell);
+    const i = Math.floor(index / size);
+    const j = index % size;
+    return [i, j];
+};
