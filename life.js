@@ -6,7 +6,7 @@ let isPlacing = false; // セルを配置中かどうか
 let lastTouchedCell = null; // 最後にタッチしたセル
 let currentColor = '#00ff33'; // 初期色
 let rule = 1; // 初期ルール
-let speed = 100; // 初期スピード
+let speed = 10; // 初期スピード
 
 // グリッドを作成する関数
 const createGrid = (size) => {
