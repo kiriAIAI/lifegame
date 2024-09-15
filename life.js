@@ -25,7 +25,6 @@ const createGrid = (size) => {
             cell.addEventListener('mouseup', () => {
                 isDragging = false;
             });
-
             // タッチイベントの追加
             cell.addEventListener('touchstart', (event) => {
                 event.preventDefault(); // スクロールを防ぐ
@@ -33,6 +32,7 @@ const createGrid = (size) => {
                 toggleCell(i, j, cell);
             });
             cell.addEventListener('touchmove', (event) => {
+                event.preventDefault(); // スクロールを防ぐ
                 if (isDragging) {
                     toggleCell(i, j, cell);
                 }
@@ -40,7 +40,6 @@ const createGrid = (size) => {
             cell.addEventListener('touchend', () => {
                 isDragging = false;
             });
-
             gridContainer.appendChild(cell);
         }
     }
