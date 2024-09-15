@@ -40,3 +40,32 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+.controls {
+    position: fixed; /* 固定位置に設定 */
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000; /* 他の要素の上に表示 */
+}
+
+
+.horizontal-buttons {
+    display: flex;
+}
+
+.controls button {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px; /* モバイル向けにフォントサイズを調整 */
+}
+
+@media (hover: none) {
+    .controls button {
+        width: 60px; /* ボタンの幅を固定 */
+        height: 60px; /* ボタンの高さを固定 */
+    }
+}
+
