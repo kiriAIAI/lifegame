@@ -184,7 +184,7 @@ document.getElementById('speed').addEventListener('input', (e) => {
 
 document.getElementById('start').addEventListener('click', () => {
     if (interval) return;
-    interval = setInterval(updateGrid, speed); // スピードを使用
+    interval = setInterval(updateGrid, 1000 / speed); // スピードを使用
 });
 
 document.getElementById('stop').addEventListener('click', () => {
