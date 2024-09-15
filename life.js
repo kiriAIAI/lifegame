@@ -1,6 +1,6 @@
 let grid = [];
 let interval;
-let size = 10;
+let size = 30;
 let isDragging = false;
 let isPlacing = false; // セルを配置中かどうか
 let lastTouchedCell = null; // 最後にタッチしたセル
@@ -191,33 +191,4 @@ const getCellIndex = (cell) => {
     const j = index % size;
     return [i, j];
 };
-let scrollInterval;
-
-const scrollStep = 20; // スクロールのステップ
-
-const scroll = (direction) => {
-    const scrollOptions = { top: window.scrollY + (direction === 'down' ? scrollStep : -scrollStep), behavior: 'smooth' };
-    window.scrollTo(scrollOptions);
-};
-
-const startScrolling = (direction) => {
-    scroll(direction);
-    scrollInterval = setInterval(() => scroll(direction), 100); // 100msごとにスクロール
-};
-
-const stopScrolling = () => {
-    clearInterval(scrollInterval);
-};
-
-// ボタンにイベントリスナーを追加
-document.getElementById('scroll-up').addEventListener('mousedown', () => startScrolling('up'));
-document.getElementById('scroll-down').addEventListener('mousedown', () => startScrolling('down'));
-document.getElementById('scroll-left').addEventListener('mousedown', () => startScrolling('left'));
-document.getElementById('scroll-right').addEventListener('mousedown', () => startScrolling('right'));
-
-document.querySelectorAll('.scroll-buttons button').forEach(button => {
-    button.addEventListener('mouseup', stopScrolling);
-    button.addEventListener('mouseleave', stopScrolling);
-});
-
 
