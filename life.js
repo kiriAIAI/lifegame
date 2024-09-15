@@ -4,6 +4,7 @@ let size = 30;
 let isDragging = false;
 let isPlacing = false; // セルを配置中かどうか
 let lastTouchedCell = null; // 最後にタッチしたセル
+let currentColor = '#00ff33'; // 初期色
 
 // グリッドを作成する関数
 const createGrid = (size) => {
@@ -21,16 +22,16 @@ const createGrid = (size) => {
             cell.addEventListener('mousedown', (e) => {
                 e.preventDefault();
                 isDragging = true;
-                isPlacing = true; // 配置開始
+                isPlacing = true;
                 toggleCell(i, j, cell);
-                lastTouchedCell = cell; // 最後にタッチしたセルを記録
+                lastTouchedCell = cell;
             });
 
             cell.addEventListener('mouseover', () => {
                 if (isDragging && isPlacing) {
-                    if (lastTouchedCell !== cell) { // 異なるセルの場合のみ
+                    if (lastTouchedCell !== cell) {
                         toggleCell(i, j, cell);
-                        lastTouchedCell = cell; // 更新
+                        lastTouchedCell = cell;
                     }
                 }
             });
@@ -78,6 +79,7 @@ const createGrid = (size) => {
 const toggleCell = (i, j, cell) => {
     grid[i][j] = !grid[i][j]; // 生死をトグル
     cell.classList.toggle('alive', grid[i][j]);
+    cell.style.backgroundColor = grid[i][j] ? currentColor : '#2a2a2a'; // 色を設定
 };
 
 // グリッドを更新する関数
@@ -126,8 +128,13 @@ const renderGrid = () => {
         const i = Math.floor(index / size);
         const j = index % size;
         cell.classList.toggle('alive', grid[i][j]);
+        cell.style.backgroundColor = grid[i][j] ? currentColor : '#2a2a2a'; // 生きているセルの色を設定
     });
 };
+
+document.getElementById('colorPicker').addEventListener('input', (e) => {
+    currentColor = e.target.value; // カラーピッカーから色を取得
+});
 
 // ボタンにイベントリスナーを追加
 document.getElementById('createGrid').addEventListener('click', () => {
