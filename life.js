@@ -6,7 +6,7 @@ let isDragging = false;
 const createGrid = (size) => {
     const gridContainer = document.getElementById('grid');
     gridContainer.innerHTML = '';
-    gridContainer.style.gridTemplateColumns = `repeat(${size}, 20px)`;
+    gridContainer.style.gridTemplateColumns = `repeat(${size}, 21px)`;
     grid = Array.from({ length: size }, () => Array(size).fill(false));
 
     for (let i = 0; i < size; i++) {
