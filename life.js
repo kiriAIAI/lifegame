@@ -193,58 +193,31 @@ const getCellIndex = (cell) => {
 };
 let scrollInterval;
 
-// スクロールボタンのイベントリスナーを追加
-const controlButtons = document.querySelectorAll('.controls button');
+const scrollStep = 20; // スクロールのステップ
 
-controlButtons.forEach(button => {
-    button.addEventListener('mousedown', (e) => {
-        e.preventDefault(); // デフォルトの動作を防止
-        startScrolling(button.id);
-    });
-
-    button.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // デフォルトの動作を防止
-        startScrolling(button.id);
-    });
-
-    button.addEventListener('mouseup', stopScrolling);
-    button.addEventListener('mouseleave', stopScrolling);
-    
-    button.addEventListener('touchend', stopScrolling);
-    button.addEventListener('touchcancel', stopScrolling);
-});
-
-// スクロールを開始する関数
-const startScrolling = (direction) => {
-    if (scrollInterval) return; // 既にスクロール中の場合は何もしない
-    scrollInterval = setInterval(() => {
-        switch (direction) {
-            case 'up':
-                window.scrollBy(0, -10); // 上にスクロール
-                break;
-            case 'down':
-                window.scrollBy(0, 10); // 下にスクロール
-                break;
-            case 'left':
-                window.scrollBy(-10, 0); // 左にスクロール
-                break;
-            case 'right':
-                window.scrollBy(10, 0); // 右にスクロール
-                break;
-        }
-    }, 50); // 50msごとにスクロール
+const scroll = (direction) => {
+    const scrollOptions = { top: window.scrollY + (direction === 'down' ? scrollStep : -scrollStep), behavior: 'smooth' };
+    window.scrollTo(scrollOptions);
 };
 
-// スクロールを停止する関数
+const startScrolling = (direction) => {
+    scroll(direction);
+    scrollInterval = setInterval(() => scroll(direction), 100); // 100msごとにスクロール
+};
+
 const stopScrolling = () => {
     clearInterval(scrollInterval);
-    scrollInterval = null;
 };
 
-// ドキュメント全体でドラッグを管理
-document.addEventListener('mouseup', stopScrolling);
-document.addEventListener('mouseleave', stopScrolling);
+// ボタンにイベントリスナーを追加
+document.getElementById('scroll-up').addEventListener('mousedown', () => startScrolling('up'));
+document.getElementById('scroll-down').addEventListener('mousedown', () => startScrolling('down'));
+document.getElementById('scroll-left').addEventListener('mousedown', () => startScrolling('left'));
+document.getElementById('scroll-right').addEventListener('mousedown', () => startScrolling('right'));
 
-// スクロールボタンのタッチイベントを追加
-document.addEventListener('touchend', stopScrolling);
-document.addEventListener('touchcancel', stopScrolling);
+document.querySelectorAll('.scroll-buttons button').forEach(button => {
+    button.addEventListener('mouseup', stopScrolling);
+    button.addEventListener('mouseleave', stopScrolling);
+});
+
+
