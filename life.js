@@ -5,6 +5,7 @@ let isDragging = false;
 let isPlacing = false; // セルを配置中かどうか
 let lastTouchedCell = null; // 最後にタッチしたセル
 let currentColor = '#00ff33'; // 初期色
+let rule = 1; // 初期ルール
 
 // グリッドを作成する関数
 const createGrid = (size) => {
@@ -89,10 +90,35 @@ const updateGrid = () => {
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
             const aliveNeighbors = countAliveNeighbors(i, j);
-            if (grid[i][j]) {
-                newGrid[i][j] = aliveNeighbors === 2 || aliveNeighbors === 3;
-            } else {
-                newGrid[i][j] = aliveNeighbors === 3;
+            if (rule === 1) {
+                // 法則1
+                if (grid[i][j]) {
+                    newGrid[i][j] = aliveNeighbors === 2 || aliveNeighbors === 3;
+                } else {
+                    newGrid[i][j] = aliveNeighbors === 3;
+                }
+            } else if (rule === 2) {
+                // 法則2 (例: 生きているセルが1または4つの隣接セルを持つと生存)
+                if (grid[i][j]) {
+                    newGrid[i][j] = aliveNeighbors === 1 || aliveNeighbors === 4;
+                } else {
+                    newGrid[i][j] = aliveNeighbors === 3; // 死んでいるセルは常に3つの隣接セルで生存
+                }
+            } else if (rule === 3) {
+                // 法則3 (例: 生きているセルが1または2つの隣接セルを持つと生存)
+                if (grid[i][j]) {
+                    newGrid[i][j] = aliveNeighbors === 1 || aliveNeighbors === 2;
+                } else {
+                    newGrid[i][j] = aliveNeighbors === 3 || aliveNeighbors === 4; // 死んでいるセルは常に3つの隣接セルで生存
+                }
+            } else if (rule === 4) {
+                if (grid[i][j]) {
+                    // 生きているセルが2または3つの隣接セルなら生存、4つ以上なら死亡
+                    newGrid[i][j] = aliveNeighbors === 1 || aliveNeighbors === 2 ? true : false;
+                } else {
+                    // 死んでいるセルは、隣接する生きているセルが奇数個なら生存
+                    newGrid[i][j] = aliveNeighbors === 1;
+                }
             }
         }
     }
@@ -100,6 +126,11 @@ const updateGrid = () => {
     grid = newGrid;
     renderGrid();
 };
+
+// 法則を切り替えるイベントリスナーを追加
+document.getElementById('ruleSelect').addEventListener('change', (e) => {
+    rule = parseInt(e.target.value); // 選択された法則を取得
+});
 
 // 生存している隣接セルの数をカウント
 const countAliveNeighbors = (x, y) => {
