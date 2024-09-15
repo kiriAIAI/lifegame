@@ -25,6 +25,22 @@ const createGrid = (size) => {
             cell.addEventListener('mouseup', () => {
                 isDragging = false;
             });
+
+            // タッチイベントの追加
+            cell.addEventListener('touchstart', (event) => {
+                event.preventDefault(); // スクロールを防ぐ
+                isDragging = true;
+                toggleCell(i, j, cell);
+            });
+            cell.addEventListener('touchmove', (event) => {
+                if (isDragging) {
+                    toggleCell(i, j, cell);
+                }
+            });
+            cell.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+
             gridContainer.appendChild(cell);
         }
     }
