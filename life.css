@@ -12,7 +12,7 @@ body {
 #grid {
     display: grid;
     margin-top: 30px;
-    border: 1px solid #ffffff;
+    border: 1px solid #000000;
 }
 
 .cell {
@@ -24,7 +24,7 @@ body {
 }
 
 .cell.alive {
-    background-color: #2fff00;
+    background-color: #00ff33;
 }
 
 button {
