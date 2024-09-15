@@ -6,6 +6,7 @@ let isPlacing = false; // セルを配置中かどうか
 let lastTouchedCell = null; // 最後にタッチしたセル
 let currentColor = '#00ff33'; // 初期色
 let rule = 1; // 初期ルール
+let speed = 100; // 初期スピード
 
 // グリッドを作成する関数
 const createGrid = (size) => {
@@ -173,9 +174,17 @@ document.getElementById('createGrid').addEventListener('click', () => {
     createGrid(size);
 });
 
+document.getElementById('speed').addEventListener('input', (e) => {
+    speed = parseInt(e.target.value); // スピードを更新
+    if (interval) {
+        clearInterval(interval); // 既存のインターバルをクリア
+        interval = setInterval(updateGrid, 1000 / speed); // 新しいスピードで再設定
+    }
+});
+
 document.getElementById('start').addEventListener('click', () => {
     if (interval) return;
-    interval = setInterval(updateGrid, 100);
+    interval = setInterval(updateGrid, speed); // スピードを使用
 });
 
 document.getElementById('stop').addEventListener('click', () => {
